@@ -5,7 +5,7 @@ import { browserSessionPersistence, GoogleAuthProvider, setPersistence, type Aut
 import { getAuth } from "firebase/auth";
 
 
-//it's okay to expose this don't worry 
+//it's okay to expose this don't worry https://stackoverflow.com/questions/37482366/is-it-safe-to-expose-firebase-apikey-to-the-public
 const firebaseConfig : { [key: string]: string } = {
   apiKey: "AIzaSyDkmbAje171F3Xd-ytt8VrmmG6UwzgqOL4",
   authDomain: "annassocial-79c35.firebaseapp.com",
