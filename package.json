@@ -27,5 +27,12 @@
 		"vite": "^4.0.0",
 		"vitest": "^0.25.3"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"firebase": "^9.17.1",
+		"firebase-functions": "4.2.1",
+		"rxfire": "^6.0.3",
+		"rxjs": "^7.8.0",
+		"svelte-use-form": "^2.6.1"
+	}
 }
