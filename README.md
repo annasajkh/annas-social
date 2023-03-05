@@ -1,1 +1,1 @@
-my own social media /j :)
+my own social media /j
