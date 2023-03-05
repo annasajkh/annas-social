@@ -15,8 +15,10 @@
                     const token = credential.accessToken;
                     // The signed-in user info.
                     $user = result.user;
-                    // IdP data available using getAdditionalUserInfo(result)
-                    // ...
+                    
+                    fetch($user.photoURL!)
+                    .then(response => response)
+                    .then(data => console.log(data));
                 }
             }).catch((error) => {
                 // Handle Errors here.

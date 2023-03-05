@@ -1,9 +1,8 @@
 <script lang="ts">
-    export let text : string = "";
+    export let text : string;
     export let extendedClass : string = "";
-    export let logoURL : string = ""
 
-    export let onClick = () => {};
+    export let onClick = () => { };
     
     let buttonClass : string = "button " + extendedClass;
 

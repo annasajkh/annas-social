@@ -1,10 +1,11 @@
 <script lang="ts">
+    import { dateNow } from "../utils/Global";
     import { msToTime } from "../utils/Utils";
+    
     export let name : string | null = "";
     export let userImageUrl : string | null = "";
     export let postText : string | null = "";
 
-    export let dateNow : number;
     export let dateCreated : number;
 </script>
 
@@ -13,7 +14,7 @@
         <img src={userImageUrl} alt="user profile"/>
         <div class="user-information">
             <p class="user-name">{name}</p>
-            <p class="user-post-date-created">{msToTime(dateNow - dateCreated)} ago</p>
+            <p class="user-post-date-created">{msToTime($dateNow - dateCreated)} ago</p>
         </div>
     </div>
     

@@ -1,34 +1,40 @@
 <script lang="ts">
-    import { auth } from "$lib/Firebase";
+    import { auth, database } from "$lib/Firebase";
     import { signOut } from "firebase/auth";
-    import { push } from "firebase/database";
-    import { postData, user, userDatabaseReference, userPostsDatabaseReference} from "../utils/Global";
+    import { push, ref, update, type DatabaseReference } from "firebase/database";
+    import { openPopup, postData, user} from "../utils/Global";
     import Button from "./Button.svelte";
     import TextInput from "./TextInput.svelte";
 
 
     let textPost : string = "";
 
-    function signOutOnClick() {
+    function onSignOutClicked() {
+        $openPopup = true;
         signOut(auth).then(() => {
             $user = null;
-            $userDatabaseReference = null;
         }).catch((error) => {
 
         });
     }
 
-    function submitPost() {
-        if($userPostsDatabaseReference != null && $user != null && textPost.trim() != "") {
+    function onSubmitClicked() {
+        if($user != null && textPost.trim() != "") {
             $postData = {
-                authorUID: $user.uid, 
-                authorDisplayName: $user.displayName!,
-                authorPhotoURL: $user.photoURL!,
+                uid: "",
+                author: {
+                    uid: $user.uid, 
+                    displayName: $user.displayName!,
+                    photoURL: $user.photoURL!,
+                },
                 text: textPost,
                 dateCreated: new Date().getTime()
             };
             
-            push($userPostsDatabaseReference, $postData);
+            push(ref(database, "/posts"), $postData)
+            .then((newPostReference : DatabaseReference) => {
+                update(newPostReference, {"uid": newPostReference.key}); 
+            });
 
             textPost = "";
         }        
@@ -43,8 +49,8 @@
     </div>
 
     <div class="below-elements">
-        <Button onClick={submitPost} text="Post" />
-        <Button onClick={signOutOnClick} text="Log Out" />
+        <Button onClick={onSubmitClicked} text="Post" />
+        <Button onClick={onSignOutClicked} text="Log Out" />
     </div>
 </div>
 

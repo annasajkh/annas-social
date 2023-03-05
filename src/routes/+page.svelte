@@ -1,70 +1,64 @@
 <script lang="ts">
     import { auth, database } from "$lib/Firebase";
     import { onAuthStateChanged, type User } from "firebase/auth";
-    import { DataSnapshot, onValue, ref } from "firebase/database";
+    import { DataSnapshot, onValue, ref, remove } from "firebase/database";
     import Login from "../components/Login.svelte";
     import Post from "../components/Post.svelte";
     import PostTextBox from "../components/PostTextBox.svelte";
     import UserProfile from "../components/UserProfile.svelte";
-    import { dateNow, user, userDatabaseReference, userPostsDatabaseReference } from "../utils/Global";
+    import { dateNow, user, posts } from "../utils/Global";
     import type { PostData } from "../utils/Type";
 
-    let postDataArray : Array<PostData> = [];
-
-
+    let opened : boolean = false;
+    
     onAuthStateChanged(auth, (usr : User | null)=> {
         if(usr) {
             $user = usr
-            $userDatabaseReference = ref(database, "users/" + $user.uid)
-            $userPostsDatabaseReference = ref(database, "users/" + $user.uid + "/posts/")
         }
-    })
+    });
 
     
-    onValue(ref(database, "users/"), (snapshot : DataSnapshot) => {
-        postDataArray = [];
+    onValue(ref(database, "/posts"), (snapshot : DataSnapshot) => {
+        let jsonPosts = snapshot.val();
+        $posts = [];
 
-        let data = snapshot.val();
+        if(jsonPosts != null) {
+            let postsIDs : Array<string> = Object.keys(jsonPosts);
 
-        if(data != null) {
-            const usersData : any = Object.values(data);
-
-            let userPosts : Array<PostData> = [];
-            
-            for(let userData of usersData) {
-                let userDataValue : Array<PostData> = Object.values(userData["posts"]);
-                
-                userPosts.push(...userDataValue);
+            for(let key of postsIDs) {
+                $posts.push(jsonPosts[key]);
             }
 
-            postDataArray.push(...userPosts);
-
-            postDataArray.sort((a : PostData, b : PostData) => {
+            $posts.sort((a : PostData, b : PostData) => {
                 return a.dateCreated - b.dateCreated;
             });
 
-            postDataArray.reverse();
+            $posts.reverse();
         }
-    })
+    });
+
+    
+    opened = true;
 
     setInterval(()=> {
         $dateNow = Date.now();
     }, 500)
+
 </script>
 
 
 {#if $user}
     <UserProfile />
+
     <div class="main-page">
         <PostTextBox />
-        {#each postDataArray as post}
-            <Post name={post.authorDisplayName} userImageUrl={post.authorPhotoURL} postText={post.text} dateCreated={post.dateCreated} dateNow={$dateNow}></Post>
+        {#each $posts as post}
+            <Post name={post.author.displayName} userImageUrl={post.author.photoURL} postText={post.text} dateCreated={post.dateCreated}></Post>
         {/each}
     </div>
 {:else}
     <Login />
 {/if}
-
 
 <style>
     :global(body) {
